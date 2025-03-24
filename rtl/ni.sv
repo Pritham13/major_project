@@ -90,7 +90,7 @@ module ni (
         if (remaining_beats_req == 0) begin
           req_buffer.tail_flit = i_flit;  // Store the tail flit
         end else begin
-          req_buffer.body_flit[remaining_beats_req] = i_flit;  // Store body flits
+          req_buffer.body_flit[remaining_beats_req-1] = i_flit;  // Store body flits
         end
         remaining_beats_req = remaining_beats_req - 1;  // Decrement counter
       end
@@ -167,10 +167,10 @@ module ni (
         fifo_rreq = 0;  // No FIFO read request during output
         if (remaining_beats_resp == TOTAL_FLITS - 1) begin
           o_flit = resp_buffer.head_flit;  // Output the head flit
-        end else if (remaining_beats_resp == 0) begin  // Note: This condition is a logic error
+        end else if (remaining_beats_resp == 0) begin 
           o_flit = resp_buffer.tail_flit;  // Output the tail flit
         end else begin
-          o_flit = resp_buffer.body_flit[remaining_beats_resp];  // Output body flits
+          o_flit = resp_buffer.body_flit[remaining_beats_resp-1];  // Output body flits
         end
         remaining_beats_resp = remaining_beats_resp - 1;  // Decrement counter
       end
