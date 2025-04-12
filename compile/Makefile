@@ -27,7 +27,7 @@ EXTRA_ARGS += --timing \
               --cc \
               --exe \
               --main \
-			  --sv 
+			  			--sv 
 
 
 # Warning suppression
@@ -38,6 +38,7 @@ WARNING_ARGS += -Wno-IGNOREDRETURN
 WARNING_ARGS += -Wno-PINMISSING
 WARNING_ARGS += -Wno-WIDTHEXPAND
 WARNING_ARGS += -Wno-UNOPTFLAT
+WARNING_ARGS += -Wno-MULTITOP
 # WARNING_ARGS += -Wno-BLKANDNBLK
 # WARNING_ARGS += -Wno-LATCH
 
