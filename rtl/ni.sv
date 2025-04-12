@@ -23,7 +23,7 @@ module ni (
 );
 
   // State variables for request and response state machines
-  req_states_e req_curr_state, req_next_state;  // Request state machine current and next states
+  ni_req_states_e req_curr_state, req_next_state;  // Request state machine current and next states
   logic [REMAINING_BEATS_LENGTH_REQ-1:0] remaining_beats_req;  // Counter for remaining data beats in request
   logic [REMAINING_BEATS_LENGTH_REQ-1:0] remaining_beats_resp; // Counter for remaining data beats in response
   req_packet_s req_buffer;  // Buffer to store incoming request packet
@@ -105,7 +105,7 @@ module ni (
   end
 
   //////////////// RESPONSE STATE MACHINE ////////////
-  resp_states_e resp_curr_state, resp_next_state;  // Response state machine current and next states
+  ni_resp_states_e resp_curr_state, resp_next_state;  // Response state machine current and next states
 
   // Sequential logic for response state transitions
   always_ff @(posedge clk, negedge resetn) begin
