@@ -2,26 +2,31 @@ import fsm_pkg::*;
 import ni_pkg::*;
 import apb_pkg::*;
 module apb_manager (
-    input                 PCLK,
-    input                 PRESETn,
-    input apb_resp_s      resp_pkt_ip,
-    output logic [15:0]   o_read_data,
+    input                PCLK,
+    input                PRESETn,
+    input  apb_resp_s    in_apb_sigs,
     // transaction packet
-    output apb_req_s      req_pkt_op,
+    output apb_req_s     op_apb_sigs,
     // inputs from fifo 
-    input req_packet_s    fifo_din,  // Data input from FIFO (request packet structure)
-    input fifo_full,  // FIFO full indicator
-    input fifo_empty,  // FIFO empty indicator
+    input  req_packet_s  in_trans_pkt,   // Data input from FIFO (request packet structure)
+    input                fifo_full,      // FIFO full indicator
+    input                fifo_empty,     // FIFO empty indicator
     // outputs to fifo 
-    output resp_packet_s  fifo_dout,  // Data output to FIFO (response packet structure)
-    output logic          fifo_rreq,  // FIFO read request
-    output logic           fifo_wreq  // FIFO write request
+    output resp_packet_s out_trans_pkt,  // Data output to FIFO (response packet structure)
+    output logic         fifo_rreq,      // FIFO read request
+    output logic         fifo_wreq       // FIFO write request
 );
 
-  apb_master_states_e p_state, n_state;
+  apb_master_states_req_e p_state, n_state;
+  apb_resp_s apb_resp_buff;
 
+  read_write_apb_enum rw_sig_ip_pkt;
 
-  assign PWDATA = (PWRITE & PSELx) ? i_write_data : 'd0;
+  logic rcv_done;
+
+  assign rw_sig_ip_pkt = in_trans_pkt.body_flit[0].data_bits[0] ? APB_WRITE : APB_READ;
+
+  //assign op_apb_sigs.PWDATA = (op_apb_sigs.PWRITE & op_apb_sigs.PSELx) ? i_write_data : 'd0;
 
   always @(posedge PCLK) begin
     if (!PRESETn) begin
@@ -31,18 +36,20 @@ module apb_manager (
     end
   end
 
-  always_comb  begin
+  always_comb begin
     n_state = p_state;
     case (p_state)
-      IDLE_ST:  n_state =(fifo_empty)? SETUP_ST : IDLE_ST;
+      IDLE_ST: n_state = (!fifo_empty) ? FIFO_RREQ_ST : IDLE_ST;
+
+      FIFO_RREQ_ST: n_state = SETUP_ST;
 
       SETUP_ST: n_state = ACCESS_ST;
 
       ACCESS_ST: begin
-        if (!PREADY) begin
+        if (!in_apb_sigs.PREADY) begin
           n_state = ACCESS_ST;
         end else begin
-          if ((PREADY & PSLVERR) == 0) begin
+          if ((in_apb_sigs.PREADY & in_apb_sigs.PSLVERR) == 0) begin
             n_state = DONE_ST;
           end else begin
             n_state = IDLE_ST;
@@ -58,46 +65,124 @@ module apb_manager (
     endcase
   end
 
-  always_comb  begin
+  always_comb begin
     if (!PRESETn) begin
-      PADDR = 8'd0;
-      PSELx = 0;
-      PWRITE = 0;
-      PENABLE = 0;
-      o_read_data = 16'd0;
+      fifo_rreq = 0;
+      op_apb_sigs.PADDR = 8'd0;
+      op_apb_sigs.PSELx = 0;
+      op_apb_sigs.PWRITE = rw_sig_ip_pkt;
+      op_apb_sigs.PENABLE = 0;
+      op_apb_sigs.PWDATA = 0;
+      rcv_done = 0;
     end else begin
       case (p_state)
         IDLE_ST: begin
-          PADDR = PADDR;
-          PSELx = PSELx;
-          PWRITE = PWRITE;
-          PENABLE = 0;
-          o_read_data = o_read_data;
+          fifo_rreq             = 0;
+          apb_resp_buff.PRDATA  = apb_resp_buff.PRDATA;
+          apb_resp_buff.PSLVERR = apb_resp_buff.PSLVERR;
+          op_apb_sigs.PADDR     = op_apb_sigs.PADDR;  // Hold current value
+          op_apb_sigs.PSELx     = op_apb_sigs.PSELx;
+          op_apb_sigs.PWRITE    = op_apb_sigs.PWRITE;
+          op_apb_sigs.PENABLE   = 0;
+          op_apb_sigs.PWDATA    = 0;
+          rcv_done              = 0;
+        end
+
+        FIFO_RREQ_ST: begin
+          fifo_rreq             = 1;
+          apb_resp_buff.PRDATA  = apb_resp_buff.PRDATA;
+          apb_resp_buff.PSLVERR = apb_resp_buff.PSLVERR;
+          op_apb_sigs.PADDR     = op_apb_sigs.PADDR;  // Hold current value
+          op_apb_sigs.PSELx     = op_apb_sigs.PSELx;
+          op_apb_sigs.PWRITE    = op_apb_sigs.PWRITE;
+          op_apb_sigs.PENABLE   = 0;
+          op_apb_sigs.PWDATA    = 0;
+          rcv_done              = 0;
+
         end
 
         SETUP_ST: begin
-          PADDR   = i_addr;
-          PSELx   = 1;
-          PENABLE = 0;
-          PWRITE  = i_read_write_sel;
+          fifo_rreq             = 0;
+          apb_resp_buff.PRDATA  = apb_resp_buff.PRDATA;
+          apb_resp_buff.PSLVERR = apb_resp_buff.PSLVERR;
+          op_apb_sigs.PADDR     = in_trans_pkt.body_flit[0].data_bits[14:1];
+          op_apb_sigs.PSELx     = 1;
+          op_apb_sigs.PWRITE    = op_apb_sigs.PWRITE;
+          op_apb_sigs.PENABLE   = 0;
+          op_apb_sigs.PWDATA    = 0;  // TODO: to be cross checked with spec
+          rcv_done              = 0;
         end
 
         ACCESS_ST: begin
-          PSELx   = 1;
-          PENABLE = 1;
-          if ((PREADY && !PWRITE) == 1) begin
-            o_read_data = PRDATA;
-          end
+          fifo_rreq = 0;
+          op_apb_sigs.PADDR = op_apb_sigs.PADDR;  // Hold previous address
+          apb_resp_buff.PRDATA = in_apb_sigs.PRDATA;
+          apb_resp_buff.PSLVERR = in_apb_sigs.PSLVERR;
+          op_apb_sigs.PSELx = 1;
+          op_apb_sigs.PWRITE = op_apb_sigs.PWRITE;
+          op_apb_sigs.PENABLE = 1;
+          op_apb_sigs.PWDATA = get_data(in_trans_pkt);  // TODO: to be cross checked with spec
+          rcv_done = 0;
         end
 
         DONE_ST: begin
-          PENABLE = 0;
-          PSELx   = 0;
+          fifo_rreq             = 0;
+          apb_resp_buff.PRDATA  = apb_resp_buff.PRDATA;
+          apb_resp_buff.PSLVERR = apb_resp_buff.PSLVERR;
+          op_apb_sigs.PADDR     = op_apb_sigs.PADDR;
+          op_apb_sigs.PSELx     = 0;
+          op_apb_sigs.PWRITE    = op_apb_sigs.PWRITE;
+          op_apb_sigs.PENABLE   = 0;
+          rcv_done              = 1;
         end
 
-        default: o_read_data = 'd0;
+        default: begin
+          fifo_rreq           = 0;
+          op_apb_sigs.PADDR   = 'd0;
+          op_apb_sigs.PSELx   = 0;
+          op_apb_sigs.PWRITE  = APB_READ;
+          op_apb_sigs.PENABLE = 0;
+          rcv_done            = 1;
+        end
       endcase
     end
   end
+  apb_master_states_resp_e curr_resp_st, next_resp_st;
 
+  always_ff @(PCLK, PRESETn) begin
+    curr_resp_st <= next_resp_st;
+  end
+
+  always_comb begin
+    case (curr_resp_st)
+      FIFO_WR_INIT_ST: begin
+        next_resp_st = (rcv_done) ? FIFO_CHK_FULL : FIFO_WR_INIT_ST;
+      end
+      FIFO_CHK_FULL: begin
+        next_resp_st = (fifo_full) ? FIFO_PUSH_ST : FIFO_WR_INIT_ST;
+      end
+      FIFO_PUSH_ST: begin
+        next_resp_st = FIFO_WR_INIT_ST;
+      end
+    endcase
+
+    case (curr_resp_st)
+      FIFO_WR_INIT_ST: begin
+        fifo_wreq = 0;
+        out_trans_pkt = 'd0;
+      end
+      FIFO_CHK_FULL: begin
+        fifo_wreq = 0;
+        out_trans_pkt = 'd0;
+      end
+
+      FIFO_PUSH_ST: begin
+        fifo_wreq = 1;
+        {out_trans_pkt.body_flit[1],
+          out_trans_pkt.body_flit[2] ,
+          out_trans_pkt.body_flit[3].data_bits[14:13]
+          } =  apb_resp_buff.PRDATA;
+      end
+    endcase
+  end
 endmodule
