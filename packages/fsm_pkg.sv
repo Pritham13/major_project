@@ -16,9 +16,15 @@ package fsm_pkg;
   } ni_resp_states_e;
 
   typedef enum {
+    DONE_ST,
     IDLE_ST,
+    FIFO_RREQ_ST,
     SETUP_ST,
-    ACCESS_ST,
-    DONE_ST
-  } apb_master_states_e;
+    ACCESS_ST
+  } apb_master_states_req_e;
+  typedef enum {
+    FIFO_WR_INIT_ST,
+    FIFO_CHK_FULL,
+    FIFO_PUSH_ST
+  } apb_master_states_resp_e;
 endpackage
