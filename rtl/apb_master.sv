@@ -23,6 +23,7 @@ module apb_manager (
   read_write_apb_enum rw_sig_ip_pkt;
 
   logic rcv_done;
+  logic resp_done;
 
   assign rw_sig_ip_pkt = in_trans_pkt.body_flit[0].data_bits[0] ? APB_WRITE : APB_READ;
 
@@ -58,7 +59,7 @@ module apb_manager (
       end
 
       DONE_ST: begin
-        n_state = IDLE_ST;
+        n_state = (resp_done) ? IDLE_ST : DONE_ST;
       end
 
       default: n_state = IDLE_ST;
@@ -159,7 +160,7 @@ module apb_manager (
         next_resp_st = (rcv_done) ? FIFO_CHK_FULL : FIFO_WR_INIT_ST;
       end
       FIFO_CHK_FULL: begin
-        next_resp_st = (fifo_full) ? FIFO_PUSH_ST : FIFO_WR_INIT_ST;
+        next_resp_st = (!fifo_full) ? FIFO_PUSH_ST : FIFO_CHK_FULL;
       end
       FIFO_PUSH_ST: begin
         next_resp_st = FIFO_WR_INIT_ST;
@@ -168,20 +169,24 @@ module apb_manager (
 
     case (curr_resp_st)
       FIFO_WR_INIT_ST: begin
+        resp_done = 0;
         fifo_wreq = 0;
         out_trans_pkt = 'd0;
       end
       FIFO_CHK_FULL: begin
+        resp_done = 0;
         fifo_wreq = 0;
         out_trans_pkt = 'd0;
       end
 
       FIFO_PUSH_ST: begin
+        resp_done = 1;
         fifo_wreq = 1;
-        {out_trans_pkt.body_flit[1],
-          out_trans_pkt.body_flit[2] ,
-          out_trans_pkt.body_flit[3].data_bits[14:13]
+        {out_trans_pkt.body_flit[0],
+          out_trans_pkt.body_flit[1],
+          out_trans_pkt.body_flit[2].data_bits[14:13]
           } =  apb_resp_buff.PRDATA;
+        out_trans_pkt.body_flit[2].data_bits[12] = apb_resp_buff.PSLVERR;
       end
     endcase
   end
