@@ -48,7 +48,7 @@ package ni_pkg;
   // packed struct to represent packet 
   typedef struct packed {
     head_flit_s head_flit;
-    body_flit_s [NUM_BODY_FLITS-1:0] body_flit;
+    body_flit_s [NUM_DATA_FLITS-1:0] body_flit;
     tail_flit_s tail_flit;
   } resp_packet_s;
 
