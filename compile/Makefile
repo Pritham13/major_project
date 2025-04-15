@@ -45,9 +45,9 @@ WARNING_ARGS += -Wno-MULTITOP
 
 compile :
 	@echo "Running verilator"
-	$(VERILATOR) \
-	-f filelist.f \
-	$(EXTRA_ARGS) \
+	$(VERILATOR) 		\
+	-f filelist.f 	\
+	$(EXTRA_ARGS) 	\
 	$(COMPILE_ARGS) \
 	$(WARNING_ARGS) \
 	$(TESTBENCH_FILES)
