@@ -12,14 +12,14 @@ module ni (
     output logic        ready,   // Ready signal indicating sampler is ready to receive
 
     // inputs from fifo 
-    input req_packet_s fifo_din,   // Data input from FIFO (request packet structure)
-    input              fifo_full,  // FIFO full indicator
-    input              fifo_empty, // FIFO empty indicator
+    input resp_packet_s fifo_din,   // Data input from FIFO (request packet structure)
+    input               fifo_full,  // FIFO full indicator
+    input               fifo_empty, // FIFO empty indicator
 
     // outputs to fifo 
-    output resp_packet_s fifo_dout,  // Data output to FIFO (response packet structure)
-    output logic         fifo_rreq,  // FIFO read request
-    output logic         fifo_wreq   // FIFO write request
+    output req_packet_s fifo_dout,  // Data output to FIFO (response packet structure)
+    output logic        fifo_rreq,  // FIFO read request
+    output logic        fifo_wreq   // FIFO write request
 );
 
   // State variables for request and response state machines
@@ -100,12 +100,18 @@ module ni (
         fifo_wreq = 1;  // Assert FIFO write request
         fifo_dout = req_buffer;  // Output the request buffer to FIFO
       end
+      WAIT_REQ_ST: begin
+        ready     = 0;  // Not ready during write operation
+        fifo_wreq = 0;  // Assert FIFO write request
+        fifo_dout = req_buffer;  // Output the request buffer to FIFO
+      end
 
     endcase
   end
 
   //////////////// RESPONSE STATE MACHINE ////////////
-  ni_resp_states_e resp_curr_state, resp_next_state;  // Response state machine current and next states
+  ni_resp_states_e
+      resp_curr_state, resp_next_state;  // Response state machine current and next states
 
   // Sequential logic for response state transitions
   always_ff @(posedge clk, negedge resetn) begin
@@ -149,33 +155,34 @@ module ni (
         trans_done           = 0;  // Reset transaction done flag
         remaining_beats_resp = TOTAL_FLITS - 1;  // Initialize counter for response flits
         fifo_rreq            = 0;  // No FIFO read request
+        resp_buffer          = fifo_din;
       end
 
       FIFO_RREQ_RESP_ST: begin
         trans_done           = 0;  // Transaction not done yet
         remaining_beats_resp = TOTAL_FLITS - 1;  // Initialize counter for response flits
         fifo_rreq            = 1;  // Assert FIFO read request
+        resp_buffer          = fifo_din;
       end
 
       FIFO_SAMPLE_DATA_ST: begin
         trans_done           = 0;  // Transaction not done yet
         remaining_beats_resp = TOTAL_FLITS - 1;  // Initialize counter for response flits
         fifo_rreq            = 0;  // De-assert FIFO read request
+        resp_buffer          = fifo_din;
       end
 
       DRIVE_FLIT_OUT_ST: begin
         fifo_rreq = 0;  // No FIFO read request during output
         if (remaining_beats_resp == TOTAL_FLITS - 1) begin
           o_flit = resp_buffer.head_flit;  // Output the head flit
-        end else if (remaining_beats_resp == 0) begin 
+        end else if (remaining_beats_resp == 0) begin
           o_flit = resp_buffer.tail_flit;  // Output the tail flit
         end else begin
           o_flit = resp_buffer.body_flit[remaining_beats_resp-1];  // Output body flits
         end
         remaining_beats_resp = remaining_beats_resp - 1;  // Decrement counter
       end
-
     endcase
   end
 endmodule
-
