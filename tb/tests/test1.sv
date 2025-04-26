@@ -23,6 +23,9 @@ task automatic test1();
       data_bits: 15'h0000,
       flit_identifier: 1'b1  // Typically tail flit has identifier set to 1
   };
+
+  @(posedge clk)
+  @(posedge clk)
   $display("==================================Input Transaction begin =====================================");
   print_data_flits (in_trans);
   send_flits_on_clock(in_trans);

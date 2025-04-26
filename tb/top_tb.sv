@@ -1,39 +1,67 @@
+/**
+ * Module: top_tb
+ * This testbench verifies the functionality of the Network Interface (NI) to APB bridge.
+ * It simulates both the NoC and APB interfaces to validate data transmission and protocol conversion.
+ */
 import fsm_pkg::*;
 import ni_pkg::*;
 import apb_pkg::*;
+
 module top_tb;
-  // First, declare all necessary signals
-  // Clock and reset
+  /** Clock signal for system timing */
   logic clk;
+  /** Active-low reset signal */
   logic resetn;
 
   // NI/NoC Interface signals
+  /** Input flit data from NoC */
   logic [15:0] i_flit;
+  /** Enable signal for data reception */
   logic enable;
+  /** Output flit data to NoC */
   logic [15:0] o_flit;
+  /** Ready signal indicating NoC can accept data */
   logic ready;
+  /** Valid signal indicating output data is valid */
   logic valid_out;
 
   // APB interface signals
+  /** APB response signals bundle */
   apb_resp_s apb_resp_signals;
+  /** APB request signals bundle */
   apb_req_s apb_req_signals;
-  // Clock generation
+
+  /**
+   * Clock Generation
+   * Generates a 100MHz clock (10ns period)
+   */
   initial begin
     clk = 0;
-    forever #5 clk = ~clk;  // 10ns period (100MHz) clock
+    forever #5 clk = ~clk;
   end
 
-  // Reset generation (negative edge reset)
+  /**
+   * Reset Generation
+   * Generates an active-low reset pulse
+   */
   initial begin
-    // resetn = 1;
-     resetn = 0;  // Assert reset (active low)
+    resetn = 0;  // Assert reset (active low)
     #10 resetn = 1;  // De-assert reset after 20ns
   end
+
+  /**
+   * VCD Dump Configuration
+   * Sets up waveform dumping for simulation analysis
+   */
   initial begin
     $dumpfile("dump.vcd");
     $dumpvars;
   end
-  // Instantiate the top_module
+
+  /**
+   * DUT Instantiation
+   * Instantiates the top-level design under test with all interface connections
+   */
   top top_inst (
       .clk             (clk),               // System clock
       .resetn          (resetn),            // Active-low reset
@@ -48,6 +76,19 @@ module top_tb;
       .apb_req_signals (apb_req_signals)    // APB request signals structure
   );
 
+  /**
+   * Task: send_flits_on_clock
+   * Sends a complete packet of flits synchronized to clock edges
+   * 
+   * Parameters:
+   * - input_trans : Input transaction packet to be transmitted
+   * 
+   * The task handles:
+   * 1. Header flit transmission
+   * 2. Body flits transmission
+   * 3. Tail flit transmission
+   * All transmissions are synchronized to clock edges and include debug messages
+   */
   task automatic send_flits_on_clock(input req_packet_s input_trans);
     begin
       // Send each flit one by one on consecutive clock cycles
@@ -73,8 +114,16 @@ module top_tb;
     end
   endtask
 
+  // Test case includes
   `include "test1.sv"
+  `include "test2.sv"
+
+  /**
+   * Test Execution
+   * Initiates the test sequence
+   */
   initial begin
     test1();
   end
+
 endmodule

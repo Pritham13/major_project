@@ -1,7 +1,7 @@
 import fsm_pkg::*;
 import ni_pkg::*;
 import apb_pkg::*;
-module top_module (
+module top (
     input                    clk,
     input                    resetn,
     // NI side (NoC interface)
@@ -9,6 +9,7 @@ module top_module (
     input                    enable,
     output            [15:0] o_flit,
     output                   ready,
+    output                   valid_out,
     // APB side
     input  apb_resp_s        apb_resp_signals,
     output apb_req_s         apb_req_signals
@@ -39,6 +40,7 @@ module top_module (
       .enable(enable),
       .o_flit(o_flit),
       .ready(ready),
+      .valid_out(valid_out),
 
       // FIFO interfaces - UPDATED based on new NI module definition
       .fifo_din(resp_fifo_dout),  // Response data from resp FIFO to NI

@@ -1,35 +1,56 @@
+/**
+ * Module: apb_manager
+ * APB Master interface manager that handles:
+ * - Request/Response packet processing
+ * - APB protocol state machine
+ * - FIFO interface control
+ */
 import fsm_pkg::*;
 import ni_pkg::*;
 import apb_pkg::*;
+
 module apb_manager (
+    /** APB Clock input */
     input                PCLK,
+    /** APB Reset input (active-low) */
     input                PRESETn,
+    /** APB Response signals from slave */
     input  apb_resp_s    in_apb_sigs,
-    // transaction packet
+    /** APB Request signals to slave */
     output apb_req_s     op_apb_sigs,
-    // inputs from fifo 
-    input  req_packet_s  in_trans_pkt,   // Data input from FIFO (request packet structure)
-    input                fifo_full,      // FIFO full indicator
-    input                fifo_empty,     // FIFO empty indicator
-    // outputs to fifo 
-    output resp_packet_s out_trans_pkt,  // Data output to FIFO (response packet structure)
-    output logic         fifo_rreq,      // FIFO read request
-    output logic         fifo_wreq       // FIFO write request
+    /** Input request packet from FIFO */
+    input  req_packet_s  in_trans_pkt,
+    /** FIFO full status */
+    input                fifo_full,
+    /** FIFO empty status */
+    input                fifo_empty,
+    /** Output response packet to FIFO */
+    output resp_packet_s out_trans_pkt,
+    /** FIFO read request */
+    output logic         fifo_rreq,
+    /** FIFO write request */
+    output logic         fifo_wreq
 );
 
+  /** Current state of APB request FSM */
   apb_master_states_req_e p_state, n_state;
+  /** Buffered APB response signals */
   apb_resp_s apb_resp_buff;
-
+  /** Read/Write indicator from input packet */
   read_write_apb_enum rw_sig_ip_pkt;
-
+  /** Request completion flag */
   logic rcv_done;
+  /** Response completion flag */
   logic resp_done;
 
+  // Extract read/write signal from input packet
   assign rw_sig_ip_pkt = in_trans_pkt.body_flit[0].data_bits[0] ? APB_WRITE : APB_READ;
 
-  //assign op_apb_sigs.PWDATA = (op_apb_sigs.PWRITE & op_apb_sigs.PSELx) ? i_write_data : 'd0;
-
-  always @(posedge PCLK) begin
+  /**
+   * APB Request State Machine: Sequential Logic
+   * Handles state transitions on clock edges
+   */
+  always @(posedge PCLK, negedge PRESETn) begin
     if (!PRESETn) begin
       p_state <= IDLE_ST;
     end else begin
@@ -37,6 +58,10 @@ module apb_manager (
     end
   end
 
+  /**
+   * APB Request State Machine: Next State Logic
+   * Determines next state based on current conditions
+   */
   always_comb begin
     n_state = p_state;
     case (p_state)
@@ -50,7 +75,7 @@ module apb_manager (
         if (!in_apb_sigs.PREADY) begin
           n_state = ACCESS_ST;
         end else begin
-          if ((in_apb_sigs.PREADY & in_apb_sigs.PSLVERR) == 0) begin
+          if ((in_apb_sigs.PREADY ) == 1) begin
             n_state = DONE_ST;
           end else begin
             n_state = IDLE_ST;
@@ -66,12 +91,16 @@ module apb_manager (
     endcase
   end
 
+  /**
+   * APB Request State Machine: Output Logic
+   * Controls APB interface signals based on current state
+   */
   always_comb begin
     if (!PRESETn) begin
       fifo_rreq = 0;
-      op_apb_sigs.PADDR = 8'd0;
+      op_apb_sigs.PADDR = 'd0;
       op_apb_sigs.PSELx = 0;
-      op_apb_sigs.PWRITE = rw_sig_ip_pkt;
+      op_apb_sigs.PWRITE = APB_READ;
       op_apb_sigs.PENABLE = 0;
       op_apb_sigs.PWDATA = 0;
       rcv_done = 0;
@@ -108,7 +137,7 @@ module apb_manager (
           apb_resp_buff.PSLVERR = apb_resp_buff.PSLVERR;
           op_apb_sigs.PADDR     = in_trans_pkt.body_flit[0].data_bits[14:1];
           op_apb_sigs.PSELx     = 1;
-          op_apb_sigs.PWRITE    = op_apb_sigs.PWRITE;
+          op_apb_sigs.PWRITE    = rw_sig_ip_pkt;
           op_apb_sigs.PENABLE   = 0;
           op_apb_sigs.PWDATA    = 0;  // TODO: to be cross checked with spec
           rcv_done              = 0;
@@ -122,7 +151,8 @@ module apb_manager (
           op_apb_sigs.PSELx = 1;
           op_apb_sigs.PWRITE = op_apb_sigs.PWRITE;
           op_apb_sigs.PENABLE = 1;
-          op_apb_sigs.PWDATA = get_data(in_trans_pkt);  // TODO: to be cross checked with spec
+          op_apb_sigs.PWDATA =
+              get_data(in_trans_pkt);  // TODO: to be cross checked with spec && sample and use this
           rcv_done = 0;
         end
 
@@ -148,12 +178,22 @@ module apb_manager (
       endcase
     end
   end
+
+  /** Current and next states for response FSM */
   apb_master_states_resp_e curr_resp_st, next_resp_st;
 
-  always_ff @(PCLK, PRESETn) begin
+  /**
+   * APB Response State Machine: Sequential Logic
+   * Handles response processing state transitions
+   */
+  always_ff @(posedge PCLK, negedge PRESETn) begin
     curr_resp_st <= next_resp_st;
   end
 
+  /**
+   * APB Response State Machine: Combined Next State and Output Logic
+   * Controls response processing and FIFO write operations
+   */
   always_comb begin
     case (curr_resp_st)
       FIFO_WR_INIT_ST: begin
@@ -190,4 +230,5 @@ module apb_manager (
       end
     endcase
   end
+
 endmodule
