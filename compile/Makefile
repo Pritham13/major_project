@@ -14,7 +14,7 @@ endif
 
 # Simulation configuration
 SIM_NAME ?= sim
-TOP_MODULE = ahb_top_tb
+TOP_MODULE = top_tb
 
 # Compilation arguments
 COMPILE_ARGS += --prefix $(SIM_NAME)
@@ -27,7 +27,8 @@ EXTRA_ARGS += --timing \
               --cc \
               --exe \
               --main \
-			  			--sv 
+			  			--sv \
+							--top-module $(TOP_MODULE)
 
 
 # Warning suppression
@@ -43,7 +44,7 @@ WARNING_ARGS += -Wno-MULTITOP
 # WARNING_ARGS += -Wno-BLKANDNBLK
 # WARNING_ARGS += -Wno-LATCH
 
-compile :
+compile : clean
 	@echo "Running verilator"
 	$(VERILATOR) 		\
 	-f filelist.f 	\
@@ -56,7 +57,7 @@ compile :
 
 run :
 	@echo "Running simulation"
-	@./obj_dir/$(SIM_NAME) +TESTNAME=${TESTNAME}
+	@./obj_dir/$(SIM_NAME) 
 
 clean:
 
