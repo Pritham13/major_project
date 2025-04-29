@@ -27,8 +27,8 @@ EXTRA_ARGS += --timing \
               --cc \
               --exe \
               --main \
-			  			--sv \
-							--top-module $(TOP_MODULE)
+			  --sv \
+			  --top-module $(TOP_MODULE)
 
 
 # Warning suppression
@@ -48,6 +48,7 @@ compile : clean
 	@echo "Running verilator"
 	$(VERILATOR) 		\
 	-f filelist.f 	\
+	+define+DEBUG   \
 	$(EXTRA_ARGS) 	\
 	$(COMPILE_ARGS) \
 	$(WARNING_ARGS) \
