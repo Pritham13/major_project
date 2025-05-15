@@ -127,7 +127,7 @@ task automatic test2();
       apb_resp_signals.PRDATA == extract_resp_data_from_packet(out_trans) && 
       extract_resp_from_packet(out_trans)) begin
     // Success case reporting
-    $display("[PASS] Time=%0t: Data match!", $time);
+    $display("TEST2 :: [PASS] Time=%0t: Data match!", $time);
     $display("Time=%0t: Expected data: 0x%h", $time, (apb_resp_signals.PRDATA));
     $display("Time=%0t: Actual extracted data: 0x%h", $time, extract_resp_data_from_packet(
              out_trans));

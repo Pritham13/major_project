@@ -38,7 +38,7 @@ task automatic test1();
     end
   end
   if (apb_req_signals.PWDATA == get_data(in_trans)) begin
-    $display("[PASS] Time=%0t: Data match!", $time);
+    $display("TEST1 :: [PASS] Time=%0t: Data match!", $time);
     $display("Time=%0t: Expected data: 0x%h", $time, get_data(in_trans));
     $display("Time=%0t: Actual PWDATA: 0x%h", $time, apb_req_signals.PWDATA);
   end else begin

@@ -58,7 +58,8 @@ compile : clean
 
 run :
 	@echo "Running simulation"
-	@./obj_dir/$(SIM_NAME) 
+	# @./obj_dir/$(SIM_NAME) 
+	@./obj_dir/$(SIM_NAME) +TESTNAME=${TESTNAME}
 
 clean:
 

@@ -122,8 +122,14 @@ module top_tb;
    * Test Execution
    * Initiates the test sequence
    */
+  string testname = "";
   initial begin
-    test1();
+    if ($value$plusargs("TESTNAME=%s", testname)) begin
+      case (testname)
+        "test_1": test1();
+        "test_2": test2();
+      endcase
+    end
   end
 
 endmodule
