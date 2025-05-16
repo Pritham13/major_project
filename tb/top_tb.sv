@@ -128,6 +128,7 @@ module top_tb;
       case (testname)
         "test_1": test1();
         "test_2": test2();
+        default : test2();
       endcase
     end
   end
