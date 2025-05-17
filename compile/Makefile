@@ -1,4 +1,3 @@
-
 # -------------------------------------
 # Testbench Makefile for Verilog Simulation using verilator
 # -------------------------------------
@@ -16,6 +15,7 @@ endif
 SIM_NAME ?= sim
 TOP_MODULE = top_tb
 
+NUM_TESTS ?= 2
 # Compilation arguments
 COMPILE_ARGS += --prefix $(SIM_NAME)
 COMPILE_ARGS += -o $(SIM_NAME)
@@ -61,6 +61,13 @@ run :
 	# @./obj_dir/$(SIM_NAME) 
 	@./obj_dir/$(SIM_NAME) +TESTNAME=${TESTNAME}
 
+run_all: 
+	@echo "Running all tests (1 to $(NUM_TESTS))"
+	@for i in $$(seq 1 $(NUM_TESTS)); do \
+		echo "Running test_$$i..."; \
+		./obj_dir/$(SIM_NAME) +TESTNAME=test_$$i | egrep "PASS|FAIL"; \
+	done
+	@echo "All tests completed"
 clean:
 
 	@echo "Cleaning up"
@@ -72,3 +79,4 @@ clean:
 
 wave: 
 	gtkwave *.vcd
+
