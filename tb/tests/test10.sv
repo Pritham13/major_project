@@ -1,5 +1,5 @@
 /**
- * Test: test2
+ * Test: test10
  * Verifies the NoC to APB bridge functionality with randomized data
  * Tests packet transmission, APB protocol handling, and data integrity
  */
@@ -8,14 +8,14 @@ import ni_pkg::*;
 import apb_pkg::*;
 
 /**
- * Task: test2
+ * Task: test10
  * Performs end-to-end testing of the NoC-APB bridge with following steps:
  * 1. Creates and sends a request packet with random data
  * 2. Monitors APB interface signals
  * 3. Captures response packet
  * 4. Verifies data integrity between input and output
  */
-task automatic test2();
+task automatic test10();
   /** Counter for flit indexing */
   int i = 0;
   /** Input transaction packet */
@@ -127,7 +127,7 @@ task automatic test2();
       apb_resp_signals.PRDATA == extract_resp_data_from_packet(out_trans) && 
       extract_resp_from_packet(out_trans)) begin
     // Success case reporting
-    $display("TEST2 :: [PASS] : Data match!");
+    $display("test10 :: [PASS] : Data match!");
     $display("Time=%0t: Expected data: 0x%h", $time, (apb_resp_signals.PRDATA));
     $display("Time=%0t: Actual extracted data: 0x%h", $time, extract_resp_data_from_packet(
              out_trans));

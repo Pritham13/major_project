@@ -1,7 +1,7 @@
 import fsm_pkg::*;
 import ni_pkg::*;
 import apb_pkg::*;
-task automatic test1();
+task automatic test7();
   req_packet_s in_trans;
   // Initialize head flit
   in_trans.head_flit = '{
@@ -38,7 +38,7 @@ task automatic test1();
     end
   end
   if (apb_req_signals.PWDATA == get_data(in_trans)) begin
-    $display("TEST1 :: [PASS] : Data match!");
+    $display("test7 :: [PASS] : Data match!");
     $display("Time=%0t: Expected data: 0x%h", $time, get_data(in_trans));
     $display("Time=%0t: Actual PWDATA: 0x%h", $time, apb_req_signals.PWDATA);
   end else begin

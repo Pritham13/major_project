@@ -15,7 +15,7 @@ endif
 SIM_NAME ?= sim
 TOP_MODULE = top_tb
 
-NUM_TESTS ?= 2
+NUM_TESTS ?= 10 
 # Compilation arguments
 COMPILE_ARGS += --prefix $(SIM_NAME)
 COMPILE_ARGS += -o $(SIM_NAME)

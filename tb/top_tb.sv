@@ -115,8 +115,18 @@ module top_tb;
   endtask
 
   // Test case includes
-  `include "test1.sv"
-  `include "test2.sv"
+  /* `include "test1.sv" */
+  /* `include "test2.sv" */
+`include "test8.sv"
+`include "test5.sv"
+`include "test4.sv"
+`include "test3.sv"
+`include "test10.sv"
+`include "test7.sv"
+`include "test2.sv"
+`include "test6.sv"
+`include "test1.sv"
+`include "test9.sv"
 
   /**
    * Test Execution
@@ -128,6 +138,14 @@ module top_tb;
       case (testname)
         "test_1": test1();
         "test_2": test2();
+        "test_3": test3();
+        "test_4": test4();
+        "test_5": test5();
+        "test_6": test6();
+        "test_7": test7();
+        "test_8": test8();
+        "test_9": test9();
+        "test_10": test10();
         default : test2();
       endcase
     end
