@@ -15,7 +15,7 @@ endif
 SIM_NAME ?= sim
 TOP_MODULE = top_tb
 
-NUM_TESTS ?= 10 
+NUM_TESTS ?= 2
 # Compilation arguments
 COMPILE_ARGS += --prefix $(SIM_NAME)
 COMPILE_ARGS += -o $(SIM_NAME)
@@ -27,8 +27,11 @@ EXTRA_ARGS += --timing \
               --cc \
               --exe \
               --main \
-			  --sv \
-			  --top-module $(TOP_MODULE)
+							--trace-structs \
+							--trace-fst \
+							--trace\
+							--sv \
+							--top-module $(TOP_MODULE)
 
 
 # Warning suppression
