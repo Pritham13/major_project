@@ -1,0 +1,250 @@
+Running simulation
+# @./obj_dir/sim 
+-----------------------data at reset----------- ----------- 00000000000000000000000000000110
+-----------------------data at reset----------- ----------- 00000000000000000000000000000101
+==================================Input Transaction begin =====================================
+Time=15: === DATA FLITS BREAKDOWN ===
+Time=15: Data Flit[0] = 0xcf10 (data_bits = 0x6788, flit_id = 0)
+Time=15: Data Flit[1] = 0xbb38 (data_bits = 0x5d9c, flit_id = 0)
+Time=15: Data Flit[2] = 0x5408 (data_bits = 0x2a04, flit_id = 0)
+Time=15: Data Flit[3] = 0x4558 (data_bits = 0x22ac, flit_id = 0)
+Time=15: === CONCATENATED DATA ===
+Time=15: Full data value = 0x2ece6788 (32 bits)
+Time=15: =========================
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x00000000):
+  body_flit[0]                 = 0x00
+  body_flit[1]                 = 0x00
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=15: getting flit: 0x0000
+Time=15: i value:           0
+Time=15: remaining_beats_resp value:           5
+---------------------------------------
+Time=25: Sending HEADER flit[0] = 0x0000 with enable=1
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x00000000):
+  body_flit[0]                 = 0x00
+  body_flit[1]                 = 0x00
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=25: getting flit: 0x0000
+Time=25: i value:           0
+Time=25: remaining_beats_resp value:           4
+---------------------------------------
+Time=35: Sending BODY flit[1] = 0xcf10 with enable=1
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x00000000):
+  body_flit[0]                 = 0x00
+  body_flit[1]                 = 0x00
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=35: getting flit: 0xcf10
+Time=35: i value:           0
+Time=35: remaining_beats_resp value:           3
+---------------------------------------
+Time=45: Sending BODY flit[2] = 0xbb38 with enable=1
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x00000000):
+  body_flit[0]                 = 0x00
+  body_flit[1]                 = 0x00
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=45: getting flit: 0xbb38
+Time=45: i value:           0
+Time=45: remaining_beats_resp value:           2
+---------------------------------------
+Time=55: Sending BODY flit[3] = 0x5408 with enable=1
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x00000000):
+  body_flit[0]                 = 0x00
+  body_flit[1]                 = 0x00
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=55: getting flit: 0x5408
+Time=55: i value:           0
+Time=55: remaining_beats_resp value:           1
+---------------------------------------
+Time=65: Sending BODY flit[4] = 0x4558 with enable=1
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x00000000):
+  body_flit[0]                 = 0x00
+  body_flit[1]                 = 0x00
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=65: getting flit: 0x4558
+Time=65: i value:           0
+Time=65: remaining_beats_resp value:           0
+---------------------------------------
+Time=65: i value:           0 :: tail_flit value :: 4558 :: sampled value :: 4558
+Time=75: Sending TAIL flit[5] = 0x0001 with enable=1
+Time=75: Completed sending 6 flits
+==================================Input Transaction end =====================================
+================================== PRDATA is 0x92178378  =====================================
+Data Fields Breakdown (32-bit value: 0x92178378):
+  body_flit[0]                 = 0x17
+  body_flit[1]                 = 0xde
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=75: i value:           0 :: tail_flit value :: 0001 :: sampled value :: 0001
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x00000000):
+  body_flit[0]                 = 0x00
+  body_flit[1]                 = 0x00
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=75: getting flit: 0x0001
+Time=75: i value:           0
+Time=75: remaining_beats_resp value:           0
+---------------------------------------
+time = 175 :sending head
+time = 185 :sending head
+time = 185 :sending head
+time = 195 :sending head
+---------------------------------------
+Time=195: sending flit: 0x0000
+Time=195: i value:           0
+Time=195: remaining_beats_resp value:           5
+---------------------------------------
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x92178378):
+  body_flit[0]                 = 0x17
+  body_flit[1]                 = 0xde
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=195: getting flit: 0x0001
+Time=195: i value:           0
+Time=195: remaining_beats_resp value:           0
+---------------------------------------
+time = 195 :sending head
+time = 205 :sampling head :: Head value :: 0000
+time = 205 :sending head
+---------------------------------------
+Time=205: sending flit: 0x0000
+Time=205: i value:           0
+Time=205: remaining_beats_resp value:           4
+---------------------------------------
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x92178378):
+  body_flit[0]                 = 0x17
+  body_flit[1]                 = 0xde
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=205: getting flit: 0x0001
+Time=205: i value:           0
+Time=205: remaining_beats_resp value:           0
+---------------------------------------
+time = 205 :sending body
+time = 215 :sampling body :: body_flit[          1] :: 000000002485
+time = 215 :sending body
+---------------------------------------
+Time=215: sending flit: 0x2485
+Time=215: i value:           1
+Time=215: remaining_beats_resp value:           3
+---------------------------------------
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x92178378):
+  body_flit[0]                 = 0x17
+  body_flit[1]                 = 0xde
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=215: getting flit: 0x0001
+Time=215: i value:           1
+Time=215: remaining_beats_resp value:           0
+---------------------------------------
+time = 215 :sending body
+time = 225 :sampling body :: body_flit[          2] :: 0000e0de2485
+time = 225 :sending body
+---------------------------------------
+Time=225: sending flit: 0xe0de
+Time=225: i value:           2
+Time=225: remaining_beats_resp value:           2
+---------------------------------------
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x92178378):
+  body_flit[0]                 = 0x17
+  body_flit[1]                 = 0xde
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=225: getting flit: 0x0001
+Time=225: i value:           2
+Time=225: remaining_beats_resp value:           0
+---------------------------------------
+time = 225 :sending body
+time = 235 :sampling body :: body_flit[          3] :: 2000e0de2485
+time = 235 :sending body
+---------------------------------------
+Time=235: sending flit: 0x2000
+Time=235: i value:           3
+Time=235: remaining_beats_resp value:           1
+---------------------------------------
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x92178378):
+  body_flit[0]                 = 0x17
+  body_flit[1]                 = 0xde
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=235: getting flit: 0x0001
+Time=235: i value:           3
+Time=235: remaining_beats_resp value:           0
+---------------------------------------
+time = 235 :sending tail
+time = 245 :sampling tail :: Tail value :: 0001 
+time = 245 :sending tail
+---------------------------------------
+Time=245: sending flit: 0x0001
+Time=245: i value:           3
+Time=245: remaining_beats_resp value:           0
+---------------------------------------
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x92178378):
+  body_flit[0]                 = 0x17
+  body_flit[1]                 = 0xde
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=245: getting flit: 0x0001
+Time=245: i value:           3
+Time=245: remaining_beats_resp value:           0
+---------------------------------------
+---------------------------------------
+Time=255: sending flit: 0x0001
+Time=255: i value:           3
+Time=255: remaining_beats_resp value:           0
+---------------------------------------
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x92178378):
+  body_flit[0]                 = 0x17
+  body_flit[1]                 = 0xde
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=255: getting flit: 0x0001
+Time=255: i value:           3
+Time=255: remaining_beats_resp value:           0
+---------------------------------------
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x92178378):
+  body_flit[0]                 = 0x17
+  body_flit[1]                 = 0xde
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=265: getting flit: 0x0001
+Time=265: i value:           3
+Time=265: remaining_beats_resp value:           0
+---------------------------------------
+TEST2 :: [PASS] : Data match!
+Time=275: Expected data: 0x92178378
+Time=275: Actual extracted data: 0x92178378
+- /home/pradhyumna/active_repos/major_project/tb/tests/test2.sv:142: Verilog $finish
+---------------------------------------
+Data Fields Breakdown (32-bit value: 0x92178378):
+  body_flit[0]                 = 0x17
+  body_flit[1]                 = 0xde
+  body_flit[2].data_bits[14:13] = 0x0000
+----------------------------------------
+Time=275: getting flit: 0x0001
+Time=275: i value:           3
+Time=275: remaining_beats_resp value:           0
+---------------------------------------
+- S i m u l a t i o n   R e p o r t: Verilator 5.031 devel
+- Verilator: $finish at 280ps; walltime 0.003 s; speed 85.350 ns/s
+- Verilator: cpu 0.003 s on 1 threads; alloced 157 MB
